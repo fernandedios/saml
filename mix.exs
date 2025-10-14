@@ -9,7 +9,10 @@ defmodule Saml.Mixfile do
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      erlc_options: [include_dirs: ["include", "../esaml/include"]]
+      erlc_options: [
+        "include",
+        Path.expand("../esaml/include", __DIR__)
+      ]
     ]
   end
 
