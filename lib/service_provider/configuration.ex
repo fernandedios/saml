@@ -3,7 +3,7 @@ alias PublicKeyUtils.{Key, Certificate}
 alias SAML.{Organization, Contact}
 
 defmodule SAML.ServiceProvider.Configuration do
-  defrecord :esaml, :esaml_sp, extract(:esaml_sp, from_lib: "esaml/include/esaml.hrl")
+  defrecord :esaml, :esaml_sp, extract(:esaml_sp, from: "../identity_provider/esaml.hrl")
 
   @moduledoc """
   Provides for configuration of a service provider to identity provider integration.
@@ -25,19 +25,17 @@ defmodule SAML.ServiceProvider.Configuration do
   - `organization` (optional) Organization details to include in metadata.xml
   - `contact` (optional) Technical contact to include in metadata.xml
   """
-  defstruct [
-    key: nil,
-    certificate: nil,
-    certificate_chain: [],
-    consume_url: nil,
-    entity_id: nil,
-    signed_requests: true,
-    signed_metadata: true,
-    signed_envelopes: true,
-    signed_assertions: true,
-    organization: %Organization{},
-    contact: %Contact{}
-  ]
+  defstruct key: nil,
+            certificate: nil,
+            certificate_chain: [],
+            consume_url: nil,
+            entity_id: nil,
+            signed_requests: true,
+            signed_metadata: true,
+            signed_envelopes: true,
+            signed_assertions: true,
+            organization: %Organization{},
+            contact: %Contact{}
 
   def to_esaml(%__MODULE__{} = config, idp \\ nil) do
     esaml(
@@ -57,7 +55,7 @@ defmodule SAML.ServiceProvider.Configuration do
   end
 
   defp to_erl(nil), do: :undefined
-  defp to_erl(%Certificate{} = cert), do: with {:ok, der} <- Certificate.der(cert), do: der
+  defp to_erl(%Certificate{} = cert), do: with({:ok, der} <- Certificate.der(cert), do: der)
   defp to_erl(%Key{key: key}), do: key
   defp to_erl(%Organization{} = org), do: Organization.to_esaml(org)
   defp to_erl(%Contact{} = contact), do: Contact.to_esaml(contact)
@@ -65,8 +63,10 @@ defmodule SAML.ServiceProvider.Configuration do
   defp to_erl(list) when is_list(list), do: Enum.map(list, &to_erl/1)
 
   defp fingerprints(nil), do: []
+
   defp fingerprints(%{certificate: certificate, certificates: certificates}) do
-    fingerprints = Enum.map(certificates, &({:sha, &1.fingerprints[:sha]}))
+    fingerprints = Enum.map(certificates, &{:sha, &1.fingerprints[:sha]})
+
     case certificate do
       %{fingerprints: fps} -> [{:sha, fps[:sha]} | fingerprints]
       _ -> fingerprints

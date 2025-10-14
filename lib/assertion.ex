@@ -2,13 +2,13 @@ import Record
 
 defmodule SAML.Assertion do
   defmodule Subject do
-    defstruct [
-      name: nil,
-      confirmation_method: nil,
-      not_on_or_after: nil
-    ]
+    defstruct name: nil,
+              confirmation_method: nil,
+              not_on_or_after: nil
 
-    defrecordp :esaml, :esaml_subject, extract(:esaml_subject, from_lib: "esaml/include/esaml.hrl")
+    defrecordp :esaml,
+               :esaml_subject,
+               extract(:esaml_subject, from: "identity_provider/esaml.hrl")
 
     def from_esaml(esaml() = subject) do
       %__MODULE__{
@@ -32,17 +32,17 @@ defmodule SAML.Assertion do
     end
   end
 
-  defstruct [
-    version: nil,
-    issue_instant: nil,
-    recipient: nil,
-    issuer: nil,
-    subject: nil,
-    conditions: nil,
-    attributes: %{}
-  ]
+  defstruct version: nil,
+            issue_instant: nil,
+            recipient: nil,
+            issuer: nil,
+            subject: nil,
+            conditions: nil,
+            attributes: %{}
 
-  defrecordp :esaml, :esaml_assertion, extract(:esaml_assertion, from_lib: "esaml/include/esaml.hrl")
+  defrecordp :esaml,
+             :esaml_assertion,
+             extract(:esaml_assertion, from_lib: "esaml/include/esaml.hrl")
 
   def from_esaml(esaml() = assertion) do
     %__MODULE__{
@@ -52,7 +52,7 @@ defmodule SAML.Assertion do
       issuer: extract_issuer(assertion),
       subject: extract_subject(assertion),
       conditions: extract_conditions(assertion),
-      attributes: extract_attributes(assertion),
+      attributes: extract_attributes(assertion)
     }
   end
 
@@ -73,7 +73,7 @@ defmodule SAML.Assertion do
   defp extract_subject(esaml(subject: subject)), do: __MODULE__.Subject.from_esaml(subject)
 
   defp extract_conditions(esaml(conditions: conditions)) do
-    for {key, value} <- (conditions || []), into: %{} do
+    for {key, value} <- conditions || [], into: %{} do
       if key in [:not_on_or_after, :not_before] do
         case NaiveDateTime.from_iso8601(to_string(value)) do
           {:ok, value} -> {key, value}
@@ -86,8 +86,8 @@ defmodule SAML.Assertion do
   end
 
   defp extract_attributes(esaml(attributes: attributes)) do
-    for {key, value} <- (attributes || []),
-    into: %{},
-    do: {to_string(key), to_string(value)}
+    for {key, value} <- attributes || [],
+        into: %{},
+        do: {to_string(key), to_string(value)}
   end
 end

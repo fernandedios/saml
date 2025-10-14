@@ -1,12 +1,10 @@
 import Record
 
 defmodule SAML.Contact do
-  defrecordp :esaml, :esaml_contact, extract(:esaml_contact, [from_lib: "esaml/include/esaml.hrl"])
+  defrecordp :esaml, :esaml_contact, extract(:esaml_contact, from: "identity_provider/esaml.hrl")
 
-  defstruct [
-    name: nil,
-    email: nil
-  ]
+  defstruct name: nil,
+            email: nil
 
   def from_esaml(esaml() = contact) do
     %__MODULE__{

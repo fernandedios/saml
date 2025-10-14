@@ -17,30 +17,28 @@ defmodule SAML.IdentityProvider.Configuration do
   - `contact` (optional) Technical contact to include in metadata.xml
   """
 
-  defstruct [
-    signed_requests: true,
-    certificate: nil,
-    certificates: [],
-    entity_id: nil,
-    consume_url: nil,
-    name_format: nil,
-    contact: nil,
-    organization: nil
-  ]
+  defstruct signed_requests: true,
+            certificate: nil,
+            certificates: [],
+            entity_id: nil,
+            consume_url: nil,
+            name_format: nil,
+            contact: nil,
+            organization: nil
 
-  defrecordp :esaml, :esaml_idp_metadata, extract(:esaml_idp_metadata, from_lib: "esaml/include/esaml.hrl")
-  defrecordp :xml_text, :xmlText, extract(:xmlText, from_lib: "xmerl/include/xmerl.hrl")
+  defrecordp :esaml, :esaml_idp_metadata, extract(:esaml_idp_metadata, from: "./esaml.hrl")
+  defrecordp :xml_text, :xmlText, extract(:xmlText, from: "./esaml.hrl")
 
   def from_metadata_url(url) do
     with {:ok, metadata} <- fetch_metadata(url),
-    do: from_metadata(metadata)
+         do: from_metadata(metadata)
   end
 
   def from_metadata(xml) do
     with {:ok, xml} <- parse_metadata(xml),
          {:ok, certificates} <- extract_certificates(xml),
          {:ok, idp} <- identity_provider(xml),
-    do: %__MODULE__{from_esaml(idp) | certificates: certificates}
+         do: %__MODULE__{from_esaml(idp) | certificates: certificates}
   end
 
   def from_esaml(esaml() = idp) do
@@ -72,11 +70,13 @@ defmodule SAML.IdentityProvider.Configuration do
   defp to_erl(list) when is_list(list), do: Enum.map(list, &to_erl/1)
 
   defp extract_organization(esaml(org: nil)), do: nil
+
   defp extract_organization(esaml(org: organization)) do
     Organization.from_esaml(organization)
   end
 
   defp extract_contact(esaml(tech: nil)), do: nil
+
   defp extract_contact(esaml(tech: contact)) do
     Contact.from_esaml(contact)
   end
@@ -89,6 +89,7 @@ defmodule SAML.IdentityProvider.Configuration do
 
   defp extract_certificate(esaml(certificate: nil)), do: nil
   defp extract_certificate(esaml(certificate: :undefined)), do: nil
+
   defp extract_certificate(esaml(certificate: certificate)) do
     case Certificate.load(certificate) do
       {:ok, [certificate | _]} -> certificate
@@ -98,16 +99,17 @@ defmodule SAML.IdentityProvider.Configuration do
 
   defp extract_certificates(metadata) do
     for(
-      xml_text(value: text) <- :xmerl_xpath.string(
-        '//dsig:X509Certificate/text()',
-        metadata,
-        namespace: [{'dsig', :"http://www.w3.org/2000/09/xmldsig#"}]
-      ),
+      xml_text(value: text) <-
+        :xmerl_xpath.string(
+          '//dsig:X509Certificate/text()',
+          metadata,
+          namespace: [{'dsig', :"http://www.w3.org/2000/09/xmldsig#"}]
+        ),
       text = to_string(text),
       {:ok, cert} = Certificate.load(text),
       do: cert
     )
-    |> List.flatten
+    |> List.flatten()
     |> case do
       [] -> {:error, :no_certificates_in_metadata}
       certificates -> {:ok, certificates}

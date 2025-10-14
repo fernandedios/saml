@@ -1,13 +1,11 @@
 import Record
 
 defmodule SAML.Organization do
-  defrecordp :esaml, :esaml_org, extract(:esaml_org, [from_lib: "esaml/include/esaml.hrl"])
+  defrecordp :esaml, :esaml_org, extract(:esaml_org, from: "identity_provider/esaml.hrl")
 
-  defstruct [
-    name: nil,
-    display_name: nil,
-    url: nil
-  ]
+  defstruct name: nil,
+            display_name: nil,
+            url: nil
 
   def from_esaml(esaml() = org) do
     %__MODULE__{
