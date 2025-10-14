@@ -30,7 +30,7 @@ defmodule Saml.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      {:public_key_utils, "~> 0.1.1", github: "boringbutgreat/public_key_utils"},
+      {:public_key_utils, "~> 0.1.1", github: "fernandedios/public_key_utils"},
       {:esaml, "~> 3.6"}
     ]
   end
