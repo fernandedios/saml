@@ -29,12 +29,12 @@ defmodule SAML.IdentityProvider.Configuration do
   defrecordp :esaml,
              :esaml_idp_metadata,
              extract(:esaml_idp_metadata,
-               from: Path.join([__DIR__, "lib/identity_provider/esaml.hrl"])
+               from: Path.join([__DIR__, "esaml.hrl"])
              )
 
   defrecordp :xml_text,
              :xmlText,
-             extract(:xmlText, from: Path.join([__DIR__, "lib/identity_provider/esaml.hrl"]))
+             extract(:xmlText, from: Path.join([__DIR__, "esaml.hrl"]))
 
   def from_metadata_url(url) do
     with {:ok, metadata} <- fetch_metadata(url),

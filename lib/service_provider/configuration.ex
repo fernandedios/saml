@@ -5,7 +5,7 @@ alias SAML.{Organization, Contact}
 defmodule SAML.ServiceProvider.Configuration do
   defrecord :esaml,
             :esaml_sp,
-            extract(:esaml_sp, from: Path.join([__DIR__, "lib/identity_provider/esaml.hrl"]))
+            extract(:esaml_sp, from: "../identity_provider/esaml.hrl")
 
   @moduledoc """
   Provides for configuration of a service provider to identity provider integration.
