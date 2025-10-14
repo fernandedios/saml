@@ -4,7 +4,7 @@ defmodule SAML.Organization do
   defrecordp :esaml,
              :esaml_org,
              extract(:esaml_org,
-               from: Path.join([__DIR__, "lib/identity_provider/esaml.hrl"])
+               from: Path.join([__DIR__, "identity_provider/esaml.hrl"])
              )
 
   defstruct name: nil,
