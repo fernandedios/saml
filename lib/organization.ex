@@ -1,7 +1,11 @@
 import Record
 
 defmodule SAML.Organization do
-  defrecordp :esaml, :esaml_org, extract(:esaml_org, from: "identity_provider/esaml.hrl")
+  defrecordp :esaml,
+             :esaml_org,
+             extract(:esaml_org,
+               from: Path.join([__DIR__, "lib/identity_provider/esaml.hrl"])
+             )
 
   defstruct name: nil,
             display_name: nil,

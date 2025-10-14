@@ -1,7 +1,9 @@
 import Record
 
 defmodule SAML.Contact do
-  defrecordp :esaml, :esaml_contact, extract(:esaml_contact, from: "identity_provider/esaml.hrl")
+  defrecordp :esaml,
+             :esaml_contact,
+             extract(:esaml_contact, from: Path.join([__DIR__, "lib/identity_provider/esaml.hrl"]))
 
   defstruct name: nil,
             email: nil
