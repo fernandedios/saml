@@ -44,7 +44,7 @@ defmodule SAML.Assertion do
 
   defrecordp :esaml,
              :esaml_assertion,
-             extract(:esaml_assertion, from_lib: "esaml/include/esaml.hrl")
+             extract(:esaml_assertion, from: Path.join([__DIR__, "identity_provider/esaml.hrl"]))
 
   def from_esaml(esaml() = assertion) do
     %__MODULE__{
