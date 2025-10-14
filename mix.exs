@@ -31,7 +31,7 @@ defmodule Saml.Mixfile do
   defp deps do
     [
       {:public_key_utils, "~> 0.1.1", github: "fernandedios/public_key_utils"},
-      {:esaml, "~> 3.6"}
+      {:esaml, github: "boringbutgreat/esaml", branch: "dont-dupe-ns"}
     ]
   end
 end
