@@ -11,6 +11,7 @@
 -include_lib("xmerl/include/xmerl.hrl").
 -include_lib("public_key/include/public_key.hrl").
 
+-record(xmlText, {parents = [], pos, value}).
 -record(esaml_org, {
 	name = "" :: esaml:localized_string(),
 	displayname = "" :: esaml:localized_string(),
