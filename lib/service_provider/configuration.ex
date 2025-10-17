@@ -5,7 +5,13 @@ alias SAML.{Organization, Contact}
 defmodule SAML.ServiceProvider.Configuration do
   defrecord :esaml,
             :esaml_sp,
-            extract(:esaml_sp, from: "../identity_provider/esaml.hrl")
+            extract(:esaml_sp,
+              from:
+                Path.expand(
+                  "../../identity_provider/esaml.hrl",
+                  __ENV__.file
+                )
+            )
 
   @moduledoc """
   Provides for configuration of a service provider to identity provider integration.
@@ -57,8 +63,21 @@ defmodule SAML.ServiceProvider.Configuration do
   end
 
   defp to_erl(nil), do: :undefined
-  defp to_erl(%Certificate{} = cert), do: with({:ok, der} <- Certificate.der(cert), do: der)
-  defp to_erl(%Key{key: key}), do: key
+
+  defp to_erl(%{__struct__: PublicKeyUtils.Certificate} = cert) do
+    with {:ok, der} <- PublicKeyUtils.Certificate.der(cert) do
+      der
+    end
+  end
+
+  defp to_erl(%{__struct__: PublicKeyUtils.Certificate, certificate: cert}) do
+    cert
+  end
+
+  defp to_erl(%{__struct__: PublicKeyUtils.Key, key: key}) do
+    key
+  end
+
   defp to_erl(%Organization{} = org), do: Organization.to_esaml(org)
   defp to_erl(%Contact{} = contact), do: Contact.to_esaml(contact)
   defp to_erl(bin) when is_binary(bin), do: to_charlist(bin)

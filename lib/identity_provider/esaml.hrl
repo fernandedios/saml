@@ -8,8 +8,8 @@
 
 %% data types / message records
 
--include_lib("public_key/include/public_key.hrl").
 -include_lib("xmerl/include/xmerl.hrl").
+-include_lib("public_key/include/public_key.hrl").
 
 -record(esaml_org, {
 	name = "" :: esaml:localized_string(),
